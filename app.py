@@ -5,12 +5,14 @@ import pandas as pd
 import pickle
 import numpy as np
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 CORS(app)
 
+
 BASE_DIR = os.path.dirname(__file__)
-DATA_PATH = os.path.join(BASE_DIR, "data", "Waitinglist.csv")
+DATA_PATH = os.path.join(BASE_DIR, "data", "Waitinglist(in).csv")
 
 df = pd.read_csv(DATA_PATH)
 
