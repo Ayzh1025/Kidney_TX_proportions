@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+
 import "./App.css";
 
 const states = [
@@ -20,25 +20,21 @@ const ethnicities = [
   "Asian, Non-Hispanic", "Amer Ind/Alaska Native, Non-Hispanic",
   "Native Hawaiian/other Pacific Islander, Non-Hispanic", "Multiracial, Non-Hispanic"
 ];
-const comorbiditiesList = [
-  "Diabetes","Hypertension","Cardiovascular Disease","Peripheral Vascular Disease",
-  "Liver Disease","Chronic Lung Disease","Obesity","Cancer","Autoimmune Disease","Stroke"
-];
+
 
 
 export default function App() {
   const [prediction, setPrediction] = useState("");   // holds backend prediction string
   const [matchCount, setMatchCount] = useState(null);
+  const [percentage, setPercentage] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [stage, setStage] = useState("form");
-  const [step, setStep] = useState(0);
   const [form, setForm] = useState({
-    age:"", dob:"", gender:"", bmi:"", ethnicity:[],
-    paymentType:"", privateProvider:"",
-    state:"", zip:"",
-    comorbidities:[], diabetesType:"", hba1c:"",
+    age:"", gender:"", bmi:"", ethnicity:[],
+    paymentType:"", 
+    state:"", region: "", diabetesType:"", hba1c:"", cpra:"",
     onDialysis:false, firstDialysisDate:"",
-    bloodType:"",
-    transplantNeeded:"", prevTransplant:false, transplantType:"", transplantDate:""
+    bloodType:""
   });
 
   const handleChange = (e) => {
@@ -47,19 +43,12 @@ export default function App() {
       if(name==="ethnicity"){
         const updated = checked ? [...form.ethnicity,value] : form.ethnicity.filter(e=>e!==value);
         setForm({...form, ethnicity:updated});
-      } else if(name==="comorbidities"){
-        const updated = checked ? [...form.comorbidities,value] : form.comorbidities.filter(c=>c!==value);
-        setForm({...form, comorbidities:updated});
-      } else if(name==="onDialysis" || name==="prevTransplant"){
-        setForm({...form, [name]:checked});
-      }
+      } 
     } else {
       setForm({...form,[name]:value});
     }
   };
 
-  const nextStep = () => setStep(Math.min(step+1,3));
-  const prevStep = () => setStep(Math.max(step-1,0));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,24 +59,23 @@ export default function App() {
     });
     const result = await response.json();
     console.log(result);
-    setPrediction(result.prediction);
     setMatchCount(result.similar_patients);
+    setPercentage(result.percentage);
+    setSummary(result.summary);
     setStage("results");
   };
 
   const handleNewQuery = () => {
     setForm({
-      age:"", dob:"", gender:"", bmi:"", ethnicity:[],
-      paymentType:"", privateProvider:"",
-      state:"", zip:"",
-      comorbidities:[], diabetesType:"", hba1c:"",
-      onDialysis:false, firstDialysisDate:"",
-      bloodType:"",
-      transplantNeeded:"", prevTransplant:false, transplantType:"", transplantDate:""
+      age:"", gender:"", bmi:"", ethnicity:[],
+    paymentType:"", 
+    state:"", region: "", diabetesType:"", hba1c:"", cpra:"",
+    onDialysis:false, firstDialysisDate:"",
+    bloodType:""
     });
     setPrediction("");
     setMatchCount(null);
-    setStep(0);
+
     setStage("form");   // back to form
   };
 
@@ -96,13 +84,24 @@ export default function App() {
       <div className="form-wrapper results-section">
         <div className="header-bar">
         <div className="header-container">
-          <div className="header-line">KIDNEY TRANSPLANT</div>
-          <div className="header-line">WAITING TIME PREDICTION</div>
+          <div className="header-line">PATIENTS</div>
+          <div className="header-line">LIKE ME</div>
         </div>
       </div>
         <h2>Results</h2>
-        {prediction && <p className="result-text">{prediction}</p>}
-        {matchCount !== null && <p className="result-text">Found {matchCount} matching patients.</p>}
+        {summary && (
+        <div className="summary-box">
+          <h3 className="summary-title">Your Selected Criteria:</h3>
+          <ul className="summary-list">
+            {Object.entries(summary).map(([key, value]) => (
+              <li key={key} className="summary-item">
+                <strong>{key}:</strong> {value || "Not Selected"}
+              </li>
+            ))}
+          </ul>
+        </div>
+        )}
+        {matchCount !== null && <p className="result-text">Found {matchCount} matching patients out of 89,928. Percentage : {percentage}% </p>}
         <button className="submit-btn" onClick={handleNewQuery}>
         Start New Query
       </button>
@@ -114,34 +113,15 @@ export default function App() {
     <>
       <div className="header-bar">
         <div className="header-container">
-          <div className="header-line">KIDNEY TRANSPLANT</div>
-          <div className="header-line">WAITING TIME PREDICTION</div>
+          <div className="header-line">PATIENTS</div>
+          <div className="header-line">LIKE ME</div>
         </div>
       </div>
-
       <div className="form-wrapper">
-        {/* Progress Bar */}
-        <div className="progress-bar">
-          {Array.from({length:4}).map((_,i)=>(
-            <div key={i} className={`progress-step ${i<=step?"completed":""}`}></div>
-          ))}
-        </div>
-
-        {/* ========================== Steps ========================== */}
-        <motion.div
-          key={step}
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.4 }}
-        >
-          {/* Step 0: Basic Info */}
-          {step === 0 && (
             <div className="form-section">
               <h2>Basic Info</h2>
               <label>Age</label>
               <input type="number" name="age" value={form.age} onChange={handleChange} className="bubble-input" />
-              <label>Date of Birth</label>
-              <input type="date" name="dob" value={form.dob} onChange={handleChange} className="bubble-input" />
               <label>Gender</label>
               <select name="gender" value={form.gender} onChange={handleChange} className="bubble-input">
                 <option value="">Select Gender</option>
@@ -166,47 +146,28 @@ export default function App() {
               {form.paymentType==="Private Insurance" &&
                 <input type="text" name="privateProvider" value={form.privateProvider} onChange={handleChange} className="bubble-input" placeholder="Provider Name" />
               }
-            </div>
-          )}
-
-          {/* Step 1: Location */}
-          {step === 1 && (
-            <div className="form-section">
-              <h2>Location</h2>
               <label>State</label>
               <select name="state" value={form.state} onChange={handleChange} className="bubble-input">
                 <option value="">Select State</option>
                 {states.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
-              <label>ZIP Code</label>
-              <input type="number" name="zip" value={form.zip} onChange={handleChange} className="bubble-input" />
+              <label>UNOS Region</label>
+              <input type="number" name="region" value={form.region} onChange={handleChange} className="bubble-input" />
             </div>
-          )}
-
-          {/* Step 2: Medical History */}
-          {step === 2 && (
+            
+          
             <div className="form-section">
               <h2>Medical History</h2>
-              <label>Comorbidities (Select all that apply)</label>
-              <div className="multi-select">
-                {comorbiditiesList.map(c => (
-                  <span key={c} className={`bubble-option ${form.comorbidities.includes(c)?"selected":""}`}
-                        onClick={()=>handleChange({target:{name:"comorbidities",value:c,type:"checkbox",checked:!form.comorbidities.includes(c)}})}>
-                    {c}
-                  </span>
-                ))}
-              </div>
-              {form.comorbidities.includes("Diabetes") &&
-                <>
-                  <label>Type of Diabetes</label>
+              
+              <label>Diabetes Status</label>
                   <div className="radio-group">
-                    {["Type 1","Type 2","Other"].map(d =>
+                    {["None","Type 1","Type 2","Other"].map(d =>
                       <label key={d}><input type="radio" name="diabetesType" value={d} checked={form.diabetesType===d} onChange={handleChange}/> {d}</label>
                     )}
                   </div>
                   <input type="number" name="hba1c" value={form.hba1c} onChange={handleChange} className="bubble-input" placeholder="HbA1c"/>
-                </>
-              }
+                
+                  
               <label>Blood Type</label>
               <select name="bloodType" value={form.bloodType} onChange={handleChange} className="bubble-input">
                 <option value="">Blood Type</option>
@@ -215,29 +176,7 @@ export default function App() {
               <label>cPRA</label>
               <input type="number" name="cpra" value={form.cpra} onChange={handleChange} className="bubble-input" />
             </div>
-          )}
-
-          {/* Step 3: Transplant Info */}
-          {step === 3 && (
-            <div className="form-section">
-              <h2>Transplant Info</h2>
-              <label>Type Needed</label>
-              <select name="transplantNeeded" value={form.transplantNeeded} onChange={handleChange} className="bubble-input">
-                <option value="">Type Needed</option>
-                <option>Living Donor</option>
-                <option>Deceased Donor</option>
-                <option>Open to Both</option>
-              </select>
-            </div>
-          )}
-        </motion.div>
-
-        <div className="form-nav">
-          {step>0 && <button className="nav-btn" onClick={prevStep}>Back</button>}
-          {step<3 ? <button className="nav-btn" onClick={nextStep}>Next</button> : <button className="submit-btn" onClick={handleSubmit}>Submit</button>}
-        </div>
-
-        
+            <button className="submit-btn" onClick={handleSubmit}>Submit</button>
       </div>
     </>
   );
