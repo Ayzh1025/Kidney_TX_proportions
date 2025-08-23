@@ -25,6 +25,7 @@ const comorbiditiesList = [
   "Liver Disease","Chronic Lung Disease","Obesity","Cancer","Autoimmune Disease","Stroke"
 ];
 
+
 export default function App() {
   const [prediction, setPrediction] = useState("");   // holds backend prediction string
   const [matchCount, setMatchCount] = useState(null);
@@ -211,6 +212,8 @@ export default function App() {
                 <option value="">Blood Type</option>
                 {bloodType.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
+              <label>cPRA</label>
+              <input type="number" name="cpra" value={form.cpra} onChange={handleChange} className="bubble-input" />
             </div>
           )}
 

@@ -39,6 +39,19 @@ def predict():
     # Extract data
     age = float(data.get("age")) if data.get("age") else None
     bmi = float(data.get("bmi")) if data.get("bmi") else None
+    cpra = float(data.get("cpra")) if data.get("cpra") else None
+    cpra_cat = None
+    if cpra is not None:
+        if cpra == 0:
+            cpra_cat = 2
+        elif 0 < cpra < 20:
+            cpra_cat = 3
+        elif 20 <= cpra < 80:
+            cpra_cat = 4
+        elif 80 <= cpra < 98:
+            cpra_cat = 5
+        elif bmi >= 98:
+            cpra_cat = 6
     # Convert BMI to BMI category
     bmi_cat = None
     if bmi is not None:
@@ -69,6 +82,19 @@ def predict():
     payment_type = data.get("paymentType")
     blood_type = data.get("bloodType")
     ethnicity = data.get("ethnicity")
+    comorbidities = data.get("comorbidities")
+    diab = 1
+    if "diabetes" in comorbidities:
+        diab_ty = data.get("diabetesType")
+        diab = 5
+        if diab_ty is not None:
+            if diab_ty == "Type 1":
+                diab = 2
+            elif diab_ty == "Type 2":
+                diab = 3
+            elif diab_ty == "Other":
+                diab = 4
+    
     prev_transplant = int(data.get("prevTransplant")) if data.get("prevTransplant") not in [None, ""] else None
 
     # Example: convert date to "days since dialysis started"
@@ -102,7 +128,9 @@ def predict():
     "PERM_STATE": state,
     "ABO": blood_type,
     "ETHCAT": eth_cat,
-    "PAYC_CAT": payment_type
+    "PAYC_CAT": payment_type,
+    "CCPRA_CAT": cpra_cat,
+    "DIAB": diab
     }
     similar_patients = filter_data(df, **filters)
     print(similar_patients)
