@@ -7,12 +7,17 @@ import numpy as np
 from datetime import datetime
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="build", static_url_path="")
 CORS(app)
 
 @app.route("/")
-def home():
-    return "Kidney TX Proportions API is running! 🚀"
+def serve():
+    return send_from_directory(app.static_folder, "index.html")
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return send_from_directory(app.static_folder, "index.html")
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_PATH = os.path.join(BASE_DIR, "data", "Waitinglist_patients.csv")
