@@ -10,6 +10,9 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/")
+def home():
+    return "Kidney TX Proportions API is running! 🚀"
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_PATH = os.path.join(BASE_DIR, "data", "Waitinglist_patients.csv")
