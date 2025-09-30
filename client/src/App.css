@@ -1,20 +1,23 @@
 /* ==============================
    General Styles
 ============================== */
+
+
 body {
-  font-family: Arial, sans-serif;
-  background: #f8f9fc;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: #f4f6fa;
   margin: 0;
   padding: 0;
+  color: #222;
 }
 
 .form-wrapper {
-  max-width: 600px;
+  max-width: 720px; /* wider form */
   margin: 40px auto;
   background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0px 6px 24px rgba(0, 0, 0, 0.06);
 }
 
 .header-bar {
@@ -44,54 +47,58 @@ body {
 .form-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 /* ==============================
    Bubble Inputs
 ============================== */
-.bubble-input {
-  padding: 12px 15px;
-  border-radius: 25px;
-  border: 1px solid #ccc;
-  outline: none;
-  font-size: 16px;
-  transition: all 0.2s ease;
-}
 
+.bubble-input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  width: 100%;
+  background: #fafbfc;
+}
+.bubble-input.small {
+  max-width: 180px; /* for age, BMI, HbA1c */
+}
 .bubble-input:focus {
-  border-color: #007BFF;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  border-color: #0077cc;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.2);
 }
 
 /* ==============================
    Bubble Options (Ethnicity / Comorbidities)
 ============================== */
-.multi-select {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
 
 .bubble-option {
-  display: inline-block;
-  padding: 10px 16px;
-  border-radius: 30px;
-  border: 2px solid #0077cc;
-  background: #e6f2ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 25px;
+  border: 1.5px solid #0077cc;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s;
-  user-select: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  white-space: nowrap; /* keeps "Type 1" on one line */
 }
 
 .bubble-option.selected {
   background: #0077cc;
   color: white;
 }
-
 .bubble-option:hover {
-  background: #3399ff;
-  color: white;
+  background: #e6f2ff;
+  color: #005fa3;
 }
 
 /* ==============================
@@ -101,18 +108,32 @@ body {
 .submit-btn {
   background: #0077cc;
   color: white;
-  padding: 10px 20px;
-  border-radius: 25px;
+  padding: 12px 24px;
+  border-radius: 28px;
   border: none;
   cursor: pointer;
-  margin: 5px;
-  transition: background 0.3s;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s;
 }
 
 .nav-btn:hover,
 .submit-btn:hover {
-  background: #0056b3;
+  background: #005fa3;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+
+.short-input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  background: #fafbfc;
+  width: 50%;   /* half width of the form box */
+  max-width: 200px; /* optional cap */
+}
+
 
 /* ==============================
    Navigation
@@ -200,11 +221,7 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-.bubble-options {
-  display: flex;
-  gap: 10px;
-  margin-top: 5px;
-}
+
 
 
 
@@ -269,4 +286,118 @@ input:checked + .slider:before {
 .summary-item strong {
   font-weight: 600;
   color: #000;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 12px;
+  background: #f8fafc; /* distinguish from white form background */
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.dropdown-header {
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #fff;
+  font-size: 15px;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  margin-top: 6px;
+  z-index: 10;
+  padding: 6px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-item.selected {
+  background: #0077cc;
+  color: white;
+}
+
+.dropdown-item:hover {
+  background: #3399ff;
+  color: white;
+}
+
+.deselect-btn {
+  width: 100%;
+  padding: 8px;
+  background: #eee;
+  border: none;
+  cursor: pointer;
+  border-top: 1px solid #ccc;
+}
+
+.selected-bubbles {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.multi-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  /* min-height: 60px;  <-- REMOVE this */
+}
+
+.dropdown-menu {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.dropdown-option {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-option.selected {
+  background-color: #4ca9eb;
+  color: white;
+  border-radius: 5px;
+}
+
+
+.deselect-btn {
+  margin-top: 5px;
+  background-color: #ccc;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.deselect-btn:hover {
+  background-color: #999;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-start; /* align left (you can also use center or space-between) */
+  gap: 12px; /* spacing between buttons */
+  
 }
